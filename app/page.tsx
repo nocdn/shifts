@@ -55,7 +55,7 @@ export default function Home() {
     console.log(weekCommencing.toISOString().slice(0, 10))
 
     if (fetchedData) {
-      fetchedData.forEach((item, index) => {
+      fetchedData.forEach((item) => {
         if (
           item.week_commencing.slice(0, 10) ===
           weekCommencing.toISOString().slice(0, 10)

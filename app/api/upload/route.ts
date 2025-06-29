@@ -56,5 +56,5 @@ export async function POST(request: Request) {
     ])
     .select()
 
-  return Response.json({ parsed })
+  return Response.json({ parsed, data, error })
 }
