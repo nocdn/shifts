@@ -3,21 +3,65 @@ import Image from "next/image"
 import { Drawer } from "vaul"
 import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { ArrowRight, X } from "lucide-react"
+import { ArrowRight, X, Plus } from "lucide-react"
 
 export default function Home() {
   const supabase = createClient()
   const [file, setFile] = useState<File | null>(null)
+  interface Shift {
+    start: string
+    end: string
+  }
+
+  interface FetchedData {
+    week_commencing: string
+    shifts: Shift[]
+    total_hours: number
+  }
+
+  const [fetchedData, setFetchedData] = useState<FetchedData[] | null>(null)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
+  const [thisWeekSchedule, setThisWeekSchedule] = useState<FetchedData | null>(
+    null
+  )
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     async function fetchData() {
       const { data } = await supabase.from("shifts").select("*")
+      setFetchedData(data)
       console.log(data)
     }
     fetchData()
   }, [supabase])
+
+  useEffect(() => {
+    const now = new Date()
+    const isoNow = now.toISOString()
+    console.log(isoNow)
+
+    function getMonday(d = new Date()) {
+      const date = new Date(d)
+      const day = date.getDay()
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1)
+      return new Date(date.setDate(diff))
+    }
+
+    const weekCommencing = getMonday()
+    console.log(weekCommencing.toISOString().slice(0, 10))
+
+    if (fetchedData) {
+      fetchedData.forEach((item, index) => {
+        if (
+          item.week_commencing.slice(0, 10) ===
+          weekCommencing.toISOString().slice(0, 10)
+        ) {
+          console.log("thisWeekSchedule:", item)
+          setThisWeekSchedule(item)
+        }
+      })
+    }
+  }, [fetchedData])
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const files = event.target.files
@@ -37,7 +81,7 @@ export default function Home() {
     if (!file) return
     const formData = new FormData()
     formData.append("image", file)
-    fetch("/api/hello", { method: "POST", body: formData })
+    fetch("/api/upload", { method: "POST", body: formData })
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
@@ -54,7 +98,7 @@ export default function Home() {
     <div className="h-dvh w-screen bg-white p-4" data-vaul-drawer-wrapper>
       <Drawer.Root shouldScaleBackground>
         <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50">
-          Add shift
+          <Plus />
         </Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/40" />
