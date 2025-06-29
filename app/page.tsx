@@ -153,6 +153,22 @@ export default function Home() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+      <div className="flex flex-col">
+        {thisWeekSchedule?.shifts.map((item, index) => {
+          const shift = typeof item === "string" ? JSON.parse(item) : item
+          const timeStart = shift.start.split("T")[1].slice(0, 5)
+          const timeEnd = shift.end.split("T")[1].slice(0, 5)
+          // getting current day number
+          const now = new Date()
+          const isoNow = now.toISOString()
+          console.log("in items, iso now:", isoNow)
+          return (
+            <div key={index} className="flex items-center">
+              {timeStart} <ArrowRight size={18} /> {timeEnd}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
