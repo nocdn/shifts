@@ -3,7 +3,7 @@ import Image from "next/image"
 import { Drawer } from "vaul"
 import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { ArrowRight, X, Plus } from "lucide-react"
+import { ArrowRight, X, Plus, MoveRight } from "lucide-react"
 
 export default function Home() {
   const supabase = createClient()
@@ -95,11 +95,19 @@ export default function Home() {
   }
 
   return (
-    <div className="h-dvh w-screen bg-white p-4" data-vaul-drawer-wrapper>
-      <Drawer.Root shouldScaleBackground>
-        <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50">
-          <Plus />
-        </Drawer.Trigger>
+    <div
+      className="h-dvh w-screen bg-white p-4 focus:outline-none focus:ring-0"
+      data-vaul-drawer-wrapper
+    >
+      <Drawer.Root>
+        <div className="mx-4">
+          <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50 w-full focus:outline-none focus:ring-0">
+            <div className="flex items-center justify-center w-full font-jetbrains-mono gap-2 px-3.5 text-sm font-medium py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-white focus:border-none">
+              UPLOAD
+              <Plus size={17} />
+            </div>
+          </Drawer.Trigger>
+        </div>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/40" />
           <Drawer.Content className="bg-gray-100 flex flex-col rounded-t-[10px] mt-24 h-fit fixed bottom-0 left-0 right-0 outline-none">
@@ -153,18 +161,26 @@ export default function Home() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-2 w-full items-center mt-8">
         {thisWeekSchedule?.shifts.map((item, index) => {
           const shift = typeof item === "string" ? JSON.parse(item) : item
+          const startDate = new Date(shift.start)
           const timeStart = shift.start.split("T")[1].slice(0, 5)
           const timeEnd = shift.end.split("T")[1].slice(0, 5)
-          // getting current day number
-          const now = new Date()
-          const isoNow = now.toISOString()
-          console.log("in items, iso now:", isoNow)
+          const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+          const dayLabel = dayNames[startDate.getDay()].toLowerCase()
+          const isPast = new Date(shift.end) < new Date()
           return (
-            <div key={index} className="flex items-center">
-              {timeStart} <ArrowRight size={18} /> {timeEnd}
+            <div
+              key={index}
+              className={`flex w-full px-6 text-2xl font-jetbrains-mono items-center justify-between ${
+                isPast ? "text-gray-400" : ""
+              }`}
+            >
+              <p className="mr-4 capitalize">{dayLabel}: </p>
+              <p className={isPast ? "line-through" : ""}>{timeStart}</p>
+              <MoveRight size={20} />
+              <p className={isPast ? "line-through" : ""}>{timeEnd}</p>
             </div>
           )
         })}
