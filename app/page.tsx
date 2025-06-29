@@ -4,10 +4,12 @@ import { Drawer } from "vaul"
 import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { ArrowRight, X, Plus, MoveRight } from "lucide-react"
+import Spinner from "@/components/spinner"
 
 export default function Home() {
   const supabase = createClient()
   const [file, setFile] = useState<File | null>(null)
+  const [isFetching, setIsFetching] = useState(false)
   interface Shift {
     start: string
     end: string
@@ -28,9 +30,11 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     async function fetchData() {
+      setIsFetching(true)
       const { data } = await supabase.from("shifts").select("*")
       setFetchedData(data)
       console.log(data)
+      setIsFetching(false)
     }
     fetchData()
   }, [supabase])
@@ -103,7 +107,6 @@ export default function Home() {
         <div className="mx-4">
           <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50 w-full focus:outline-none focus:ring-0">
             <div className="flex items-center justify-center w-full font-jetbrains-mono gap-2 px-3.5 text-sm font-medium py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-white focus:border-none">
-              UPLOAD
               <Plus size={17} />
             </div>
           </Drawer.Trigger>
@@ -162,6 +165,16 @@ export default function Home() {
         </Drawer.Portal>
       </Drawer.Root>
       <div className="flex flex-col gap-2 w-full items-center mt-8">
+        {isFetching && (
+          <div className="flex items-center justify-center w-full gap-2 font-jetbrains-mono text-sm font-medium motion-opacity-in-0">
+            <Spinner /> FETCHING DATA...
+          </div>
+        )}
+        {thisWeekSchedule === null && !isFetching && (
+          <div className="flex items-center justify-center w-full gap-2 font-jetbrains-mono text-sm font-medium motion-opacity-in-0">
+            <p>NO SHIFTS THIS WEEK</p>
+          </div>
+        )}
         {thisWeekSchedule?.shifts.map((item, index) => {
           const shift = typeof item === "string" ? JSON.parse(item) : item
           const startDate = new Date(shift.start)
