@@ -33,7 +33,16 @@ export default function Home() {
     fileInputRef.current?.click()
   }
 
-  async function submitFile() {}
+  async function submitFile() {
+    if (!file) return
+    const formData = new FormData()
+    formData.append("image", file)
+    fetch("/api/hello", { method: "POST", body: formData })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+      })
+  }
 
   function cancelFile() {
     console.log("clearing file")
@@ -44,10 +53,13 @@ export default function Home() {
   return (
     <div className="h-dvh w-screen bg-white p-4" data-vaul-drawer-wrapper>
       <Drawer.Root shouldScaleBackground>
-        <Drawer.Trigger className="">Add shift</Drawer.Trigger>
+        <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50">
+          Add shift
+        </Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/40" />
           <Drawer.Content className="bg-gray-100 flex flex-col rounded-t-[10px] mt-24 h-fit fixed bottom-0 left-0 right-0 outline-none">
+            <Drawer.Title className="sr-only">upload a new shift</Drawer.Title>
             <div className="p-4 bg-white rounded-t-[10px] flex-1">
               <div
                 aria-hidden
