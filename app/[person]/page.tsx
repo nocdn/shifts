@@ -28,7 +28,6 @@ export default function Person({ params }: { params: any }) {
   )
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  // @ts-ignore
   const { person } = React.use(params) as { person: string }
 
   useEffect(() => {

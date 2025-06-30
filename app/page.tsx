@@ -3,7 +3,7 @@ import Image from "next/image"
 import { Drawer } from "vaul"
 import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { ArrowRight, X, Plus, MoveRight, Link } from "lucide-react"
+import { ArrowRight, X, Plus } from "lucide-react"
 import Spinner from "@/components/spinner"
 
 export default function Home() {
@@ -23,9 +23,6 @@ export default function Home() {
 
   const [fetchedData, setFetchedData] = useState<FetchedData[] | null>(null)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
-  const [thisWeekSchedule, setThisWeekSchedule] = useState<FetchedData | null>(
-    null
-  )
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
@@ -61,7 +58,6 @@ export default function Home() {
           weekCommencing.toISOString().slice(0, 10)
         ) {
           console.log("thisWeekSchedule:", item)
-          setThisWeekSchedule(item)
         }
       })
     }
