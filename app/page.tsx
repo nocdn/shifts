@@ -3,7 +3,7 @@ import Image from "next/image"
 import { Drawer } from "vaul"
 import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { ArrowRight, X, Plus, MoveRight } from "lucide-react"
+import { ArrowRight, X, Plus, MoveRight, Link } from "lucide-react"
 import Spinner from "@/components/spinner"
 
 export default function Home() {
@@ -99,6 +99,37 @@ export default function Home() {
     setPreviewURL(null)
   }
 
+  const peopleRoutes = [
+    {
+      name: "Sylwia",
+      route: "/sylwia",
+    },
+    {
+      name: "Anita",
+      route: "/anita",
+    },
+    {
+      name: "Katarzyna",
+      route: "/katarzyna",
+    },
+    {
+      name: "Martyna",
+      route: "/martyna",
+    },
+    {
+      name: "Bartosz",
+      route: "/bartosz",
+    },
+    {
+      name: "Justyna",
+      route: "/justyna",
+    },
+    {
+      name: "Grzegorz",
+      route: "/grzegorz",
+    },
+  ]
+
   return (
     <div
       className="h-dvh w-screen bg-white p-4 focus:outline-none focus:ring-0"
@@ -106,7 +137,7 @@ export default function Home() {
     >
       <Drawer.Root>
         <div className="mx-4">
-          <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50 w-full focus:outline-none focus:ring-0">
+          <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50 w-full focus:outline-none focus:ring-0 cursor-pointer">
             <div className="flex items-center justify-center w-full font-jetbrains-mono gap-2 px-3.5 text-sm font-medium py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-white focus:border-none">
               <Plus size={17} />
             </div>
@@ -171,57 +202,21 @@ export default function Home() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
-      <div className="flex flex-col gap-2 w-full items-center mt-8">
-        {isFetching && (
-          <div className="flex items-center justify-center w-full gap-2 font-jetbrains-mono text-sm font-medium motion-opacity-in-0">
-            <Spinner /> FETCHING DATA...
-          </div>
-        )}
-        {thisWeekSchedule === null && !isFetching && (
-          <div className="flex items-center justify-center w-full gap-2 font-jetbrains-mono text-sm font-medium motion-opacity-in-0">
-            <p>NO SHIFTS THIS WEEK</p>
-          </div>
-        )}
-        {thisWeekSchedule?.shifts.map((item, index) => {
-          const shift = typeof item === "string" ? JSON.parse(item) : item
-          const startDate = new Date(shift.start)
-          const timeStart = shift.start.split("T")[1].slice(0, 5)
-          const timeEnd = shift.end.split("T")[1].slice(0, 5)
-          const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-          const dayLabel = dayNames[startDate.getDay()].toLowerCase()
-          const isPast = new Date(shift.end) < new Date()
-          return (
-            <div
-              key={index}
-              className={`flex w-full px-6 motion-opacity-in-0 text-2xl font-jetbrains-mono items-center justify-between ${
-                isPast ? "text-gray-400" : ""
-              }`}
+      <div className="mt-6 ml-4">
+        <p className="text-sm font-medium font-jetbrains-mono">
+          PICK PERSON TO VIEW SHIFTS:
+        </p>
+        <div className="flex flex-wrap gap-2 font-jetbrains-mono text-sm font-medium mt-4">
+          {peopleRoutes.map((person) => (
+            <a
+              className="border border-gray-200 rounded-lg px-3.5 py-2.5 w-fit"
+              key={person.name}
+              href={person.route}
             >
-              <p className="mr-4 capitalize text-gray-700">{dayLabel}: </p>
-              <p
-                className={isPast ? "line-through font-medium" : "font-medium"}
-              >
-                {timeStart}
-              </p>
-              <MoveRight size={20} />
-              <p
-                className={isPast ? "line-through font-medium" : "font-medium"}
-              >
-                {timeEnd}
-              </p>
-            </div>
-          )
-        })}
-        {thisWeekSchedule?.total_hours && (
-          <div className="flex items-center px-6 w-full gap-2 font-jetbrains-mono motion-opacity-in-0 font-medium mt-4">
-            <p>
-              TOTAL HOURS:{" "}
-              <span className="text-gray-500 font-bold">
-                {thisWeekSchedule.total_hours}
-              </span>
-            </p>
-          </div>
-        )}
+              {person.name}
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   )
