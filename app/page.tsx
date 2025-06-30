@@ -85,7 +85,8 @@ export default function Home() {
     if (!file) return
     const formData = new FormData()
     formData.append("image", file)
-    fetch("/api/upload", { method: "POST", body: formData })
+    console.log("submitting image to multi")
+    fetch("/api/multi", { method: "POST", body: formData })
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
@@ -149,7 +150,13 @@ export default function Home() {
                       className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-gray-900 text-sm inline-flex items-center gap-1.5 justify-center"
                       onClick={submitFile}
                     >
-                      SUBMIT <ArrowRight size={16} />
+                      {isFetching ? (
+                        <Spinner />
+                      ) : (
+                        <>
+                          SUBMIT <ArrowRight size={16} />
+                        </>
+                      )}
                     </button>
                     <button
                       className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-red-800 text-sm inline-flex items-center gap-1.5 justify-center"
