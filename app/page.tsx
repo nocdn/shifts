@@ -186,17 +186,35 @@ export default function Home() {
           return (
             <div
               key={index}
-              className={`flex w-full px-6 text-2xl font-jetbrains-mono items-center justify-between ${
+              className={`flex w-full px-6 motion-opacity-in-0 text-2xl font-jetbrains-mono items-center justify-between ${
                 isPast ? "text-gray-400" : ""
               }`}
             >
-              <p className="mr-4 capitalize">{dayLabel}: </p>
-              <p className={isPast ? "line-through" : ""}>{timeStart}</p>
+              <p className="mr-4 capitalize text-gray-700">{dayLabel}: </p>
+              <p
+                className={isPast ? "line-through font-medium" : "font-medium"}
+              >
+                {timeStart}
+              </p>
               <MoveRight size={20} />
-              <p className={isPast ? "line-through" : ""}>{timeEnd}</p>
+              <p
+                className={isPast ? "line-through font-medium" : "font-medium"}
+              >
+                {timeEnd}
+              </p>
             </div>
           )
         })}
+        {thisWeekSchedule?.total_hours && (
+          <div className="flex items-center px-6 w-full gap-2 font-jetbrains-mono motion-opacity-in-0 font-medium mt-4">
+            <p>
+              TOTAL HOURS:{" "}
+              <span className="text-gray-500 font-bold">
+                {thisWeekSchedule.total_hours}
+              </span>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
