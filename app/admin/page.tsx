@@ -3,13 +3,11 @@ import Image from "next/image"
 import { Drawer } from "vaul"
 import React, { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { ArrowRight, X, Plus, MoveRight } from "lucide-react"
-import Spinner from "@/components/spinner"
+import { ArrowRight, X, Plus } from "lucide-react"
 
 export default function Admin() {
   const supabase = createClient()
   const [file, setFile] = useState<File | null>(null)
-  const [isFetching, setIsFetching] = useState(false)
   interface Shift {
     start: string
     end: string
@@ -28,11 +26,9 @@ export default function Admin() {
 
   useEffect(() => {
     async function fetchData() {
-      setIsFetching(true)
       const { data } = await supabase.from("shifts_multi").select("*")
       setFetchedData(data)
       console.log(data)
-      setIsFetching(false)
     }
     fetchData()
   }, [supabase])

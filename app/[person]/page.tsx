@@ -1,6 +1,6 @@
 "use client"
 import { Drawer } from "vaul"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { MoveRight } from "lucide-react"
 import Spinner from "@/components/spinner"
@@ -92,10 +92,6 @@ export default function Person({ params }: { params: any }) {
       .catch((err) => {
         console.error(err)
       })
-  }
-
-  const handleValueChange = (value: string) => {
-    setPromptInput(value)
   }
 
   return (
