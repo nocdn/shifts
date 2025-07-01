@@ -94,6 +94,9 @@ export default function Person({ params }: { params: any }) {
       })
   }
 
+  // Days of the week helper (MON-SUN)
+  const dayNames = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+
   return (
     <div
       className="h-dvh w-screen bg-white p-4 focus:outline-none focus:ring-0"
@@ -156,44 +159,85 @@ export default function Person({ params }: { params: any }) {
             <p>NO SHIFTS THIS WEEK</p>
           </div>
         )}
-        {thisWeekSchedule?.shifts.map((item, index) => {
-          const shift = typeof item === "string" ? JSON.parse(item) : item
-          const startDate = new Date(shift.start)
-          const timeStart = shift.start.split("T")[1].slice(0, 5)
-          const timeEnd = shift.end.split("T")[1].slice(0, 5)
-          const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-          const dayLabel = dayNames[startDate.getDay()].toLowerCase()
-          const isPast = new Date(shift.end) < new Date()
-          return (
-            <div
-              key={index}
-              className={`flex w-full px-6 motion-opacity-in-0 text-2xl font-jetbrains-mono items-center justify-between ${
-                isPast ? "text-gray-400" : ""
-              }`}
-            >
-              <p className="mr-4 capitalize text-gray-700">{dayLabel}: </p>
-              <p
-                className={isPast ? "line-through font-medium" : "font-medium"}
+        {thisWeekSchedule &&
+          dayNames.map((dayName, dayIndex) => {
+            // Try to find a shift for the current week day
+            const shiftItem = thisWeekSchedule.shifts.find((item) => {
+              const shift = typeof item === "string" ? JSON.parse(item) : item
+              // Map Monday-based index (0-6) to JS getDay() output (1-6,0)
+              const weekDayNumber = (dayIndex + 1) % 7
+              return new Date(shift.start).getDay() === weekDayNumber
+            }) as Shift | undefined
+
+            // Determine if the day has already passed (used for greyed-out style)
+            let dayDate: Date | null = null
+            if (thisWeekSchedule) {
+              const weekStart = new Date(thisWeekSchedule.week_commencing) // Monday
+              dayDate = new Date(weekStart)
+              dayDate.setDate(weekStart.getDate() + dayIndex)
+            }
+            const now = new Date()
+
+            if (shiftItem) {
+              const parsedShift =
+                typeof shiftItem === "string"
+                  ? (JSON.parse(shiftItem) as Shift)
+                  : (shiftItem as Shift)
+
+              const timeStart = parsedShift.start.split("T")[1].slice(0, 5)
+              const timeEnd = parsedShift.end.split("T")[1].slice(0, 5)
+              const shiftIsPast = new Date(parsedShift.end) < now
+              return (
+                <div
+                  key={dayIndex}
+                  className={`flex w-full px-6 motion-opacity-in-0 text-2xl font-jetbrains-mono items-center justify-between ${
+                    shiftIsPast ? "text-gray-400" : ""
+                  }`}
+                >
+                  <p className="mr-4 capitalize text-gray-700">
+                    {dayName.toLowerCase()}:{" "}
+                  </p>
+                  <p
+                    className={
+                      shiftIsPast ? "line-through font-medium" : "font-medium"
+                    }
+                  >
+                    {timeStart}
+                  </p>
+                  <MoveRight size={20} />
+                  <p
+                    className={
+                      shiftIsPast ? "line-through font-medium" : "font-medium"
+                    }
+                  >
+                    {timeEnd}
+                  </p>
+                </div>
+              )
+            }
+
+            // Day off
+            return (
+              <div
+                key={dayIndex}
+                className="flex w-full px-6 motion-opacity-in-0 text-2xl font-jetbrains-mono items-center justify-between text-gray-400 relative"
               >
-                {timeStart}
-              </p>
-              <MoveRight size={20} />
-              <p
-                className={isPast ? "line-through font-medium" : "font-medium"}
-              >
-                {timeEnd}
-              </p>
-            </div>
-          )
-        })}
+                <p className="mr-4 capitalize">{dayName.toLowerCase()}: </p>
+                <p className="font-medium">OFF&nbsp;&nbsp;</p>
+                <MoveRight size={20} className="invisible" />
+                <p className="font-medium invisible">OFF&nbsp;&nbsp;</p>
+              </div>
+            )
+          })}
         {thisWeekSchedule?.total_hours && (
           <div className="flex items-center px-6 w-full gap-2 font-jetbrains-mono motion-opacity-in-0 font-medium mt-4">
-            <p>
+            <p className="whitespace-nowrap">
               TOTAL HOURS:{" "}
               <span className="text-gray-500 font-bold">
                 {thisWeekSchedule.total_hours}
               </span>
             </p>
+            <div className="bg-gray-300 h-0.5 w-full rounded-lg ml-3.5"></div>
           </div>
         )}
       </div>
