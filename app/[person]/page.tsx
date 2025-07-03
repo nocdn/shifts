@@ -203,8 +203,10 @@ export default function Person({ params }: { params: any }) {
                     console.log(shiftHours)
                     toast(
                       <div className="flex items-center gap-1 font-jetbrains-mono">
+                        <p className="font-medium text-gray-500">
+                          TOTAL HOURS:{" "}
+                        </p>
                         <p className="font-semibold">{shiftHours}</p>
-                        <p className="font-medium">HOURS</p>
                       </div>
                     )
                   }}
@@ -256,7 +258,7 @@ export default function Person({ params }: { params: any }) {
           </div>
         )}
       </div>
-      <Toaster duration={800} />
+      <Toaster duration={500} />
     </div>
   )
 }
