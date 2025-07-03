@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { MoveRight } from "lucide-react"
 import Spinner from "@/components/spinner"
+import { Toaster, toast } from "sonner"
 
 export default function Person({ params }: { params: any }) {
   const supabase = createClient()
@@ -193,6 +194,20 @@ export default function Person({ params }: { params: any }) {
                   className={`flex w-full px-6 motion-opacity-in-0 text-2xl font-jetbrains-mono items-center justify-between ${
                     shiftIsPast ? "text-gray-400" : ""
                   }`}
+                  onClick={() => {
+                    // calculate how many hours the shift is
+                    const shiftHours =
+                      (new Date(parsedShift.end).getTime() -
+                        new Date(parsedShift.start).getTime()) /
+                      (1000 * 60 * 60)
+                    console.log(shiftHours)
+                    toast(
+                      <div className="flex items-center gap-1 font-jetbrains-mono">
+                        <p className="font-semibold">{shiftHours}</p>
+                        <p className="font-medium">HOURS</p>
+                      </div>
+                    )
+                  }}
                 >
                   <p className="mr-4 capitalize text-gray-700">
                     {dayName.toLowerCase()}:{" "}
@@ -241,6 +256,7 @@ export default function Person({ params }: { params: any }) {
           </div>
         )}
       </div>
+      <Toaster duration={800} />
     </div>
   )
 }
