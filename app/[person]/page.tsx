@@ -2,7 +2,8 @@
 import { Drawer } from "vaul"
 import React, { useEffect, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { MoveRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, MoveRight } from "lucide-react"
+import { motion } from "motion/react"
 import Spinner from "@/components/spinner"
 import { Toaster, toast } from "sonner"
 
@@ -257,6 +258,34 @@ export default function Person({ params }: { params: any }) {
             <div className="bg-gray-300 h-0.5 w-full rounded-lg ml-3.5"></div>
           </div>
         )}
+      </div>
+      <div className="grid grid-cols-2 gap-2 w-full mt-4 px-4.5">
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          onMouseDown={() => {
+            console.log("back")
+          }}
+          className="px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 cursor-pointer items-center justify-center"
+        >
+          <div className="flex items-center gap-3">
+            <ArrowLeft size={18} strokeWidth={2.5} />
+            <p>BACK</p>
+          </div>
+        </motion.div>
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          onMouseDown={() => {
+            console.log("next")
+          }}
+          className="px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 cursor-pointer items-center justify-center"
+        >
+          <div className="flex items-center gap-3">
+            <p>NEXT</p>
+            <ArrowRight size={18} strokeWidth={2.5} />
+          </div>
+        </motion.div>
       </div>
       <Toaster duration={500} />
     </div>
