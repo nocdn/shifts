@@ -1,11 +1,11 @@
-export default function Spinner() {
+export default function Spinner({ size = 22 }: { size?: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 100 100"
       preserveAspectRatio="xMidYMid"
-      width="22"
-      height="22"
+      width={size}
+      height={size}
       style={{
         shapeRendering: "auto",
         display: "block",

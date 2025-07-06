@@ -1,6 +1,6 @@
 "use client"
-import Image from "next/image"
 import { Drawer } from "vaul"
+import Spinner from "@/components/spinner"
 import React, { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { ArrowRight, X, Plus } from "lucide-react"
@@ -23,6 +23,7 @@ export default function Admin() {
 
   const [fetchedData, setFetchedData] = useState<FetchedData[] | null>(null)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cropperRef = useRef<CropperRef>(null)
@@ -78,6 +79,7 @@ export default function Admin() {
   }
 
   async function submitFile() {
+    setIsLoading(true)
     if (!file) return
     // get cropped image blob if cropper is available
     if (cropperRef.current) {
@@ -121,6 +123,7 @@ export default function Admin() {
       })
       const data = await response.json()
       console.log(data)
+      setIsLoading(false)
     } catch (error) {
       console.error(error)
     }
@@ -130,14 +133,22 @@ export default function Admin() {
     console.log("clearing file")
     setFile(null)
     setPreviewURL(null)
+    setIsLoading(false)
+    setIsVaulOpen(false)
   }
+
+  const [isVaulOpen, setIsVaulOpen] = React.useState(false)
 
   return (
     <div
       className="h-dvh w-screen bg-white p-4 focus:outline-none focus:ring-0"
       data-vaul-drawer-wrapper
     >
-      <Drawer.Root>
+      <Drawer.Root
+        dismissible={false}
+        open={isVaulOpen}
+        onOpenChange={setIsVaulOpen}
+      >
         <div className="mx-4">
           <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50 w-full focus:outline-none focus:ring-0 cursor-pointer">
             <div className="flex items-center justify-center w-full font-jetbrains-mono gap-2 px-3.5 text-sm font-medium py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-white focus:border-none">
@@ -146,7 +157,10 @@ export default function Admin() {
           </Drawer.Trigger>
         </div>
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+          <Drawer.Overlay
+            className="fixed inset-0 bg-black/40"
+            onClick={() => setIsVaulOpen(false)}
+          />
           <Drawer.Content className="bg-gray-100 flex flex-col rounded-t-[10px] mt-24 h-fit fixed bottom-0 left-0 right-0 outline-none">
             <Drawer.Title className="sr-only">upload a new shift</Drawer.Title>
             <div className="p-4 bg-white rounded-t-[10px] flex-1">
@@ -163,7 +177,7 @@ export default function Admin() {
                   onChange={handleFileChange}
                 />
                 <button
-                  className="rounded-lg border border-gray-200 px-3.5 py-2.5 font-jetbrains-mono font-medium text-gray-900 text-sm"
+                  className="rounded-lg border border-gray-200 px-3.5 py-2.5 font-jetbrains-mono font-medium text-gray-900 text-sm cursor-pointer"
                   onClick={pickFile}
                 >
                   PICK FILE
@@ -180,9 +194,18 @@ export default function Admin() {
                   <div className="w-full flex items-center gap-3">
                     <button
                       className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-gray-900 text-sm inline-flex items-center gap-1.5 justify-center"
-                      onClick={submitFile}
+                      onClick={() => {
+                        if (isLoading) return
+                        submitFile()
+                      }}
                     >
-                      SUBMIT <ArrowRight size={16} />
+                      {isLoading ? (
+                        <Spinner size={20} />
+                      ) : (
+                        <>
+                          SUBMIT <ArrowRight size={16} />
+                        </>
+                      )}
                     </button>
                     <button
                       className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-red-800 text-sm inline-flex items-center gap-1.5 justify-center"

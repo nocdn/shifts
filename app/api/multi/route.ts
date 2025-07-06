@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         content: [
           {
             type: "input_text",
-            text: 'from this image, please extract information for all people into a JSON array of objects where each object has the keys "person_name", "week_commencing", "shifts", and "total_hours". All date and time values should be in ISO 8601 format with timezone +1. Output only the JSON array without any formatting or code blocks, no newlines. Example: [{ "person_name": "ALICE", "week_commencing": "2025-07-01T00:00:00+01:00", "shifts": [ { "start": "2025-07-01T09:00:00+01:00", "end": "2025-07-01T17:30:00+01:00" } ], "total_hours": 16.5 }, { "person_name": "BOB", "week_commencing": "2025-07-01T00:00:00+01:00", "shifts": [ { "start": "2025-07-03T08:30:00+01:00", "end": "2025-07-03T15:00:00+01:00" } ], "total_hours": 14.5 }]',
+            text: 'from this image, please extract information for all people into a JSON array of objects where each object has the keys "person_name", "week_commencing", "shifts", and "total_hours". All date and time values should be in ISO 8601 format with timezone +1. Output only the JSON array without any formatting or code blocks, no newlines. Example: [{ "person_name": "ALICE", "week_commencing": "2025-07-01T00:00:00+01:00", "shifts": [ { "start": "2025-07-01T09:00:00+01:00", "end": "2025-07-01T17:30:00+01:00" } ], "total_hours": 16.5 }, { "person_name": "BOB", "week_commencing": "2025-07-01T00:00:00+01:00", "shifts": [ { "start": "2025-07-03T08:30:00+01:00", "end": "2025-07-03T15:00:00+01:00" } ], "total_hours": 14.5 }]. Only ever extract the first name for the person_name key.',
           },
           {
             type: "input_image",
