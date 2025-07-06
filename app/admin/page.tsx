@@ -3,9 +3,10 @@ import { Drawer } from "vaul"
 import Spinner from "@/components/spinner"
 import React, { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { ArrowRight, X, Plus } from "lucide-react"
+import { ArrowRight, X, Plus, Check } from "lucide-react"
 import { Cropper, type CropperRef } from "react-advanced-cropper"
 import "react-advanced-cropper/dist/style.css"
+import { Toaster, toast } from "sonner"
 
 export default function Admin() {
   const supabase = createClient()
@@ -102,6 +103,16 @@ export default function Admin() {
             })
             const data = await response.json()
             console.log(data)
+            setIsLoading(false)
+            setIsVaulOpen(false)
+            toast(
+              <div className="flex items-center gap-2 font-jetbrains-mono">
+                <Check size={16} className="text-gray-600" />
+                <p className="font-medium text-gray-600">
+                  DATA SUBMITTED SUCCESSFULLY
+                </p>
+              </div>
+            )
           } catch (error) {
             console.error(error)
           }
@@ -220,6 +231,13 @@ export default function Admin() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+      <div className="flex flex-col gap-2 mt-4 px-4">
+        <p className="text-sm text-gray-600 font-jetbrains-mono">
+          You are on the admin page. Use the button above to upload a new shift
+          for everyone.
+        </p>
+      </div>
+      <Toaster />
     </div>
   )
 }

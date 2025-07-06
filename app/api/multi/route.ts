@@ -2,12 +2,6 @@ import OpenAI from "openai"
 import { createServerClient } from "@/utils/supabase/server"
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-interface PersonData {
-  week_commencing: string
-  shifts: { start: string; end: string }[]
-  total_hours: number
-}
-
 type ParsedResponse = {
   person_name: string
   week_commencing: string
