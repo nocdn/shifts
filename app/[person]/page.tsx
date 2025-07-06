@@ -26,6 +26,9 @@ export default function Person({ params }: { params: any }) {
     null
   )
 
+  // Index of the currently displayed week within the fetched data array
+  const [currentWeekIndex, setCurrentWeekIndex] = useState<number | null>(null)
+
   const { person } = React.use(params) as { person: string }
 
   useEffect(() => {
@@ -35,17 +38,26 @@ export default function Person({ params }: { params: any }) {
         .from("shifts_multi")
         .select("*")
         .eq("person_name", person.toUpperCase())
-      setFetchedData(data)
-      console.log(data)
+
+      // Sort the results chronologically by week_commencing (ascending)
+      const sorted = data
+        ? [...data].sort(
+            (a, b) =>
+              new Date(a.week_commencing).getTime() -
+              new Date(b.week_commencing).getTime()
+          )
+        : null
+
+      setFetchedData(sorted)
+      console.log(sorted)
       setIsFetching(false)
     }
     fetchData()
   }, [supabase, person])
 
+  // Determine the initial week index once data has been fetched
   useEffect(() => {
-    const now = new Date()
-    const isoNow = now.toISOString()
-    console.log(isoNow)
+    if (!fetchedData || fetchedData.length === 0) return
 
     function getMonday(d = new Date()) {
       const date = new Date(d)
@@ -54,21 +66,25 @@ export default function Person({ params }: { params: any }) {
       return new Date(date.setDate(diff))
     }
 
-    const weekCommencing = getMonday()
-    console.log(weekCommencing.toISOString().slice(0, 10))
+    const currentMondayISO = getMonday().toISOString().slice(0, 10)
+    const idx = fetchedData.findIndex(
+      (item) => item.week_commencing.slice(0, 10) === currentMondayISO
+    )
 
-    if (fetchedData) {
-      fetchedData.forEach((item) => {
-        if (
-          item.week_commencing.slice(0, 10) ===
-          weekCommencing.toISOString().slice(0, 10)
-        ) {
-          console.log("thisWeekSchedule:", item)
-          setThisWeekSchedule(item)
-        }
-      })
-    }
+    // If current week not found, default to the most recent week
+    setCurrentWeekIndex(idx !== -1 ? idx : fetchedData.length - 1)
   }, [fetchedData])
+
+  // Update the displayed schedule whenever the index changes
+  useEffect(() => {
+    if (
+      fetchedData &&
+      currentWeekIndex !== null &&
+      fetchedData[currentWeekIndex]
+    ) {
+      setThisWeekSchedule(fetchedData[currentWeekIndex])
+    }
+  }, [fetchedData, currentWeekIndex])
 
   const [promptInput, setPromptInput] = useState("")
   const [promptResponse, setPromptResponse] = useState("")
@@ -150,6 +166,24 @@ export default function Person({ params }: { params: any }) {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+      {/* Week commencing label */}
+      {thisWeekSchedule && (
+        <div className="w-full flex mt-6 motion-opacity-in-0 px-6">
+          <p className="font-jetbrains-mono font-medium text-sm text-gray-500">
+            WEEK COMMENCING:{" "}
+            <span className="text-black font-semibold">
+              {new Date(thisWeekSchedule.week_commencing).toLocaleDateString(
+                "en-GB",
+                {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                }
+              )}
+            </span>
+          </p>
+        </div>
+      )}
       <div className="flex flex-col gap-2 w-full items-center mt-8">
         {isFetching && (
           <div className="flex items-center justify-center w-full gap-2 font-jetbrains-mono text-sm font-medium motion-opacity-in-0">
@@ -259,33 +293,78 @@ export default function Person({ params }: { params: any }) {
           </div>
         )}
       </div>
+      {/* Navigation buttons */}
       <div className="grid grid-cols-2 gap-2 w-full mt-4 px-4.5">
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          onMouseDown={() => {
-            console.log("back")
-          }}
-          className="px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 cursor-pointer items-center justify-center"
-        >
-          <div className="flex items-center gap-3">
-            <ArrowLeft size={18} strokeWidth={2.5} />
-            <p>BACK</p>
-          </div>
-        </motion.div>
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          onMouseDown={() => {
-            console.log("next")
-          }}
-          className="px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 cursor-pointer items-center justify-center"
-        >
-          <div className="flex items-center gap-3">
-            <p>NEXT</p>
-            <ArrowRight size={18} strokeWidth={2.5} />
-          </div>
-        </motion.div>
+        {(() => {
+          const canGoBack = currentWeekIndex !== null && currentWeekIndex > 0
+          const canGoNext =
+            currentWeekIndex !== null &&
+            fetchedData &&
+            currentWeekIndex < fetchedData.length - 1
+
+          return (
+            <>
+              <motion.div
+                whileTap={
+                  canGoBack
+                    ? { scale: 0.95, backgroundColor: "#f3f4f6" }
+                    : undefined
+                }
+                animate={{ backgroundColor: "#fff" }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 17,
+                  backgroundColor: { duration: 0.35 },
+                }}
+                onMouseDown={() => {
+                  if (canGoBack)
+                    setCurrentWeekIndex((prev) =>
+                      prev !== null ? prev - 1 : prev
+                    )
+                }}
+                className={`px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 items-center justify-center transition-colors duration-300 ${
+                  canGoBack ? "cursor-pointer" : "opacity-50 cursor-default"
+                }`}
+                style={{ backgroundColor: "#fff" }}
+              >
+                <div className="flex items-center gap-3">
+                  <ArrowLeft size={18} strokeWidth={2.5} />
+                  <p>BACK</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                whileTap={
+                  canGoNext
+                    ? { scale: 0.95, backgroundColor: "#f3f4f6" }
+                    : undefined
+                }
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 17,
+                  backgroundColor: { duration: 0.35 },
+                }}
+                onMouseDown={() => {
+                  if (canGoNext)
+                    setCurrentWeekIndex((prev) =>
+                      prev !== null ? prev + 1 : prev
+                    )
+                }}
+                className={`px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 items-center justify-center ${
+                  canGoNext ? "cursor-pointer" : "opacity-50 cursor-default"
+                }`}
+                style={{ backgroundColor: "#fff" }}
+              >
+                <div className="flex items-center gap-3">
+                  <p>NEXT</p>
+                  <ArrowRight size={18} strokeWidth={2.5} />
+                </div>
+              </motion.div>
+            </>
+          )
+        })()}
       </div>
       <Toaster duration={500} />
     </div>
