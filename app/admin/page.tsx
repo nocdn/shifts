@@ -4,6 +4,8 @@ import { Drawer } from "vaul"
 import React, { useEffect, useRef, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { ArrowRight, X, Plus } from "lucide-react"
+import { Cropper, type CropperRef } from "react-advanced-cropper"
+import "react-advanced-cropper/dist/style.css"
 
 export default function Admin() {
   const supabase = createClient()
@@ -23,6 +25,7 @@ export default function Admin() {
   const [previewURL, setPreviewURL] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cropperRef = useRef<CropperRef>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -76,13 +79,51 @@ export default function Admin() {
 
   async function submitFile() {
     if (!file) return
+    // get cropped image blob if cropper is available
+    if (cropperRef.current) {
+      const canvas = cropperRef.current.getCanvas()
+      if (canvas) {
+        canvas.toBlob(async (blob) => {
+          if (!blob) return
+          console.log("Cropped blob:", blob)
+          const dataUrl = canvas.toDataURL("image/png")
+          console.log("Cropped data URL:", dataUrl)
+          const formData = new FormData()
+          formData.append("image", blob, file.name)
+          for (const [key, value] of formData.entries()) {
+            console.log("FormData entry:", key, value)
+          }
+          try {
+            const response = await fetch("/api/multi", {
+              method: "POST",
+              body: formData,
+            })
+            const data = await response.json()
+            console.log(data)
+          } catch (error) {
+            console.error(error)
+          }
+        }, "image/png")
+        return
+      }
+    }
+    // fallback with logging
     const formData = new FormData()
     formData.append("image", file)
-    fetch("/api/upload", { method: "POST", body: formData })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
+    console.log("Fallback file:", file)
+    for (const [key, value] of formData.entries()) {
+      console.log("FormData entry:", key, value)
+    }
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       })
+      const data = await response.json()
+      console.log(data)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   function cancelFile() {
@@ -128,12 +169,11 @@ export default function Admin() {
                   PICK FILE
                 </button>
                 {previewURL && (
-                  <Image
+                  <Cropper
+                    ref={cropperRef}
                     src={previewURL}
-                    alt="rota"
-                    height={400}
-                    width={400}
                     className="rounded-lg"
+                    // optionally configure stencilProps such as aspectRatio
                   />
                 )}
                 {previewURL && (

@@ -113,16 +113,20 @@ export default function Home() {
       route: "/martyna",
     },
     {
-      name: "Bartosz",
-      route: "/bartosz",
-    },
-    {
       name: "Justyna",
       route: "/justyna",
     },
     {
       name: "Grzegorz",
       route: "/grzegorz",
+    },
+    {
+      name: "Bartosz",
+      route: "/bartosz",
+    },
+    {
+      name: "Nicol",
+      route: "/nicol",
     },
   ]
 
