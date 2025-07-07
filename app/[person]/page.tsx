@@ -283,10 +283,13 @@ export default function Person({ params }: { params: any }) {
           })}
         {thisWeekSchedule?.total_hours && (
           <div className="flex items-center px-6 w-full gap-2 font-jetbrains-mono motion-opacity-in-0 font-medium mt-4">
-            <p className="whitespace-nowrap">
+            <p className="whitespace-nowrap text-gray-500">
               TOTAL HOURS:{" "}
-              <span className="text-gray-500 font-bold">
+              <span className="text-black font-bold">
                 {thisWeekSchedule.total_hours}
+              </span>{" "}
+              <span className="text-gray-400 font-bold ml-1">
+                (£{(thisWeekSchedule.total_hours * 12.21).toFixed(2)})
               </span>
             </p>
             <div className="bg-gray-300 h-0.5 w-full rounded-lg ml-3.5"></div>
@@ -329,8 +332,8 @@ export default function Person({ params }: { params: any }) {
                 style={{ backgroundColor: "#fff" }}
               >
                 <div className="flex items-center gap-3">
-                  <ArrowLeft size={18} strokeWidth={2.5} />
-                  <p>BACK</p>
+                  <ArrowLeft size={17} strokeWidth={2.5} />
+                  <p className="text-sm">BACK</p>
                 </div>
               </motion.div>
 
@@ -358,8 +361,8 @@ export default function Person({ params }: { params: any }) {
                 style={{ backgroundColor: "#fff" }}
               >
                 <div className="flex items-center gap-3">
-                  <p>NEXT</p>
-                  <ArrowRight size={18} strokeWidth={2.5} />
+                  <p className="text-sm">NEXT</p>
+                  <ArrowRight size={17} strokeWidth={2.5} />
                 </div>
               </motion.div>
             </>
