@@ -297,7 +297,7 @@ export default function Person({ params }: { params: any }) {
         )}
       </div>
       {/* Navigation buttons */}
-      <div className="grid grid-cols-2 gap-2 w-full mt-4 px-4.5">
+      <div className="grid grid-cols-2 gap-2 w-full mt-4 px-4.5 motion-opacity-in-0">
         {(() => {
           const canGoBack = currentWeekIndex !== null && currentWeekIndex > 0
           const canGoNext =
@@ -332,8 +332,8 @@ export default function Person({ params }: { params: any }) {
                 style={{ backgroundColor: "#fff" }}
               >
                 <div className="flex items-center gap-3">
-                  <ArrowLeft size={17} strokeWidth={2.5} />
-                  <p className="text-sm">BACK</p>
+                  <ArrowLeft size={16} strokeWidth={2.5} />
+                  <p className="text-[15px]">BACK</p>
                 </div>
               </motion.div>
 
@@ -361,8 +361,8 @@ export default function Person({ params }: { params: any }) {
                 style={{ backgroundColor: "#fff" }}
               >
                 <div className="flex items-center gap-3">
-                  <p className="text-sm">NEXT</p>
-                  <ArrowRight size={17} strokeWidth={2.5} />
+                  <p className="text-[15px]">NEXT</p>
+                  <ArrowRight size={16} strokeWidth={2.5} />
                 </div>
               </motion.div>
             </>
