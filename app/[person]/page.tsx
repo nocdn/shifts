@@ -23,7 +23,7 @@ export default function Person({ params }: { params: any }) {
 
   const [fetchedData, setFetchedData] = useState<FetchedData[] | null>(null)
   const [thisWeekSchedule, setThisWeekSchedule] = useState<FetchedData | null>(
-    null,
+    null
   )
 
   // Index of the currently displayed week within the fetched data array
@@ -44,7 +44,7 @@ export default function Person({ params }: { params: any }) {
         ? [...data].sort(
             (a, b) =>
               new Date(a.week_commencing).getTime() -
-              new Date(b.week_commencing).getTime(),
+              new Date(b.week_commencing).getTime()
           )
         : null
 
@@ -68,7 +68,7 @@ export default function Person({ params }: { params: any }) {
 
     const currentMondayISO = getMonday().toISOString().slice(0, 10)
     const idx = fetchedData.findIndex(
-      (item) => item.week_commencing.slice(0, 10) === currentMondayISO,
+      (item) => item.week_commencing.slice(0, 10) === currentMondayISO
     )
 
     // If current week not found, default to the most recent week
@@ -178,7 +178,7 @@ export default function Person({ params }: { params: any }) {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
-                },
+                }
               )}
             </span>
           </p>
@@ -241,8 +241,11 @@ export default function Person({ params }: { params: any }) {
                         <p className="font-medium text-gray-500">
                           TOTAL HOURS:{" "}
                         </p>
-                        <p className="font-semibold">{shiftHours}</p>
-                      </div>,
+                        <p className="font-semibold ml-1">{shiftHours}</p>
+                        <p className="font-medium text-gray-500 ml-1">
+                          (£{(shiftHours * 12.21).toFixed(2)})
+                        </p>
+                      </div>
                     )
                   }}
                 >
@@ -323,7 +326,7 @@ export default function Person({ params }: { params: any }) {
                 onMouseDown={() => {
                   if (canGoBack)
                     setCurrentWeekIndex((prev) =>
-                      prev !== null ? prev - 1 : prev,
+                      prev !== null ? prev - 1 : prev
                     )
                 }}
                 className={`px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 items-center justify-center transition-colors duration-300 ${
@@ -352,7 +355,7 @@ export default function Person({ params }: { params: any }) {
                 onMouseDown={() => {
                   if (canGoNext)
                     setCurrentWeekIndex((prev) =>
-                      prev !== null ? prev + 1 : prev,
+                      prev !== null ? prev + 1 : prev
                     )
                 }}
                 className={`px-4 py-2 rounded-lg font-jetbrains-mono font-medium border border-gray-200 flex gap-2 items-center justify-center ${
@@ -369,7 +372,7 @@ export default function Person({ params }: { params: any }) {
           )
         })()}
       </div>
-      <Toaster duration={500} />
+      <Toaster duration={1000} />
     </div>
   )
 }
