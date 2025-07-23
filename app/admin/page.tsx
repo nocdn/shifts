@@ -7,6 +7,8 @@ import { ArrowRight, X, Plus, Check } from "lucide-react"
 import { Cropper, type CropperRef } from "react-advanced-cropper"
 import "react-advanced-cropper/dist/style.css"
 import { Toaster, toast } from "sonner"
+import { AnimatePresence, motion } from "motion/react"
+import HoldButton from "@/components/hold"
 
 export default function Admin() {
   const supabase = createClient()
@@ -161,9 +163,16 @@ export default function Admin() {
         onOpenChange={setIsVaulOpen}
       >
         <div className="mx-4">
-          <Drawer.Trigger className="transition-opacity duration-150 active:opacity-50 w-full focus:outline-none focus:ring-0 cursor-pointer">
-            <div className="flex items-center justify-center w-full font-jetbrains-mono gap-2 px-3.5 text-sm font-medium py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-white focus:border-none">
-              <Plus size={17} />
+          <Drawer.Trigger className="w-full focus:outline-none focus:ring-0 cursor-pointer">
+            <div
+              className="flex flex-col items-center justify-center gap-2 rounded-xl active:scale-95"
+              style={{
+                transition: "transform 160ms ease-out",
+              }}
+            >
+              <div className="flex items-center justify-center w-full font-jetbrains-mono gap-2 px-3.5 text-sm font-medium py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-white focus:border-none">
+                UPLOAD
+              </div>
             </div>
           </Drawer.Trigger>
         </div>
@@ -194,17 +203,42 @@ export default function Admin() {
                   PICK FILE
                 </button>
                 {previewURL && (
-                  <Cropper
-                    ref={cropperRef}
-                    src={previewURL}
-                    className="rounded-lg"
-                    // optionally configure stencilProps such as aspectRatio
-                  />
+                  <>
+                    <Cropper
+                      ref={cropperRef}
+                      src={previewURL}
+                      className="rounded-lg"
+                      // optionally configure stencilProps such as aspectRatio
+                    />
+                    <AnimatePresence>
+                      {isLoading ? (
+                        <motion.p
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="text-sm text-gray-600 font-jetbrains-mono ml-1"
+                        >
+                          This will take a while...
+                        </motion.p>
+                      ) : (
+                        <motion.p
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="text-sm text-gray-600 font-jetbrains-mono ml-1"
+                        >
+                          The cropped version will be submitted.
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </>
                 )}
                 {previewURL && (
                   <div className="w-full flex items-center gap-3">
                     <button
-                      className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-gray-900 text-sm inline-flex items-center gap-1.5 justify-center"
+                      className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-blue-900 text-sm inline-flex items-center gap-1.5 justify-center"
                       onClick={() => {
                         if (isLoading) return
                         submitFile()
@@ -218,12 +252,11 @@ export default function Admin() {
                         </>
                       )}
                     </button>
-                    <button
-                      className="rounded-lg cursor-pointer border border-gray-200 w-full py-2.5 font-jetbrains-mono font-medium text-red-800 text-sm inline-flex items-center gap-1.5 justify-center"
-                      onClick={cancelFile}
-                    >
-                      CANCEL <X size={16} />
-                    </button>
+                    <HoldButton
+                      onComplete={() => {
+                        cancelFile()
+                      }}
+                    />
                   </div>
                 )}
               </div>
