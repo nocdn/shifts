@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   const base64 = buffer.toString("base64")
 
   const response = await openai.responses.create({
-    model: "o4-mini",
+    model: "o3",
     reasoning: { effort: "high" },
     input: [
       {
